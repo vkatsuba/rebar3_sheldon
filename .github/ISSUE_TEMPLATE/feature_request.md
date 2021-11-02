@@ -1,13 +1,13 @@
 ---
 name: Feature request
-about: Suggest an idea for {{ repo-name }}
+about: Suggest an idea for rebar3_sheldon
 title: ''
 labels: ''
 assignees: ''
 ---
 
-## `{{ repo-name }}` version
-[Put release version here and update tag link(0.0.0)...]({{ git-url }})
+## `rebar3_sheldon` version
+[Put release version here and update tag link(0.0.0)...](https://github.com/vkatsuba/rebar3_sheldon.git)
 
 ## `OS` version
 <!-- Put the `OS` version ... -->

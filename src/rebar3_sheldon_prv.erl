@@ -1,5 +1,5 @@
-%%% @doc Plugin provider for rebar3 {{ repo-name }}.
--module({{ repo-name }}_prv).
+%%% @doc Plugin provider for rebar3 rebar3_sheldon.
+-module(rebar3_sheldon_prv).
 
 -export([init/1, do/1, format_error/1]).
 
