@@ -67,6 +67,7 @@ Example:
 {spellcheck, [
     {files, ["src/*.erl", "src/*/*.erl", "include/*.hrl"]},
     {ignore, ["src/*_ignore.erl"]},
+    {ignore_regex, "[_@./#&+-=*]"},
     {options, #{dummy => option}}
 ]}.
 ```

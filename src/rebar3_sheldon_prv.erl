@@ -33,6 +33,7 @@ init(State) ->
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
     Args = parse_opts(State),
+    SpellcheckConfig = rebar_state:get(State, spellcheck, []),
     ok = rebar_api:debug("Args: ~p", [Args]),
 
     Apps =
@@ -45,12 +46,16 @@ do(State) ->
     Cwd = rebar_state:dir(State),
     Dirs = [dir_for_app(AppInfo, Cwd) || AppInfo <- Apps],
 
-    IgnoredFiles = get_ignored_files(State),
-    Files = get_files(Args, State, Dirs) -- IgnoredFiles,
+    IgnoredFiles = get_ignored_files(SpellcheckConfig),
+    Files = get_files(Args, Dirs, SpellcheckConfig) -- IgnoredFiles,
 
     rebar_api:debug("Found ~p files: ~p", [length(Files), Files]),
 
-    case rebar3_sheldon_ast:spellcheck(Files) of
+    IgnoreRegEx = get_ignore_regex(SpellcheckConfig),
+
+    rebar_api:debug("Ignore regular expression: ~p", [IgnoreRegEx]),
+
+    case rebar3_sheldon_ast:spellcheck(Files, IgnoreRegEx) of
         [] ->
             {ok, State};
         Warnings -> %% @TODO: sheldon will return warning for TODO word
@@ -77,15 +82,14 @@ dir_for_app(AppInfo, Cwd) ->
             rebar_app_info:dir(AppInfo), Cwd),
     Dir.
 
--spec get_files(proplists:proplist(), rebar_state:t(), [file:filename_all() | []]) ->
+-spec get_files(proplists:proplist(), [file:filename_all() | []], list()) ->
                    [file:filename_all()].
-get_files(Args, State, Dirs) ->
+get_files(Args, Dirs, SpellcheckConfig) ->
     FilesFromArgs = [Value || {files, Value} <- Args],
     {Patterns, Dirs1} =
         case FilesFromArgs of
             [] ->
-                SheldonConfig = rebar_state:get(State, spellcheck, []),
-                case proplists:get_value(files, SheldonConfig, undefined) of
+                case proplists:get_value(files, SpellcheckConfig, undefined) of
                     undefined ->
                         {["include/**/*.[he]rl",
                           "include/**/*.app.src",
@@ -107,8 +111,11 @@ get_files(Args, State, Dirs) ->
     ++ [filename:join(Dir, File)
         || Dir <- Dirs1, Dir =/= "", Pattern <- Patterns, File <- filelib:wildcard(Pattern, Dir)].
 
--spec get_ignored_files(rebar_state:t()) -> [file:filename_all()].
-get_ignored_files(State) ->
-    FormatConfig = rebar_state:get(State, spellcheck, []),
-    Patterns = proplists:get_value(ignore, FormatConfig, []),
+-spec get_ignored_files(list()) -> [file:filename_all()].
+get_ignored_files(SpellcheckConfig) ->
+    Patterns = proplists:get_value(ignore, SpellcheckConfig, []),
     [IgnoredFile || Pat <- Patterns, IgnoredFile <- filelib:wildcard(Pat)].
+
+-spec get_ignore_regex(list()) -> [string()].
+get_ignore_regex(SpellcheckConfig) ->
+    proplists:get_value(ignore_regex, SpellcheckConfig, undefined).
