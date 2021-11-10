@@ -35,7 +35,7 @@ test_app(_Config) ->
     ok = file:set_cwd("../../../../test/test_app"),
     State = init_test_app(),
     {Res, _} = spellcheck(State),
-    ?assert(ok == Res).
+    ?assertEqual(ok, Res).
 
 -spec no_good_files(ct_suite:ct_config()) -> ok | no_return().
 no_good_files(_Config) ->
@@ -45,7 +45,7 @@ no_good_files(_Config) ->
     State2 = rebar_state:set(State1, spellcheck, [Files]),
     %% Our parsers don't crash on unparseable or non-existent files
     {Res, _} = spellcheck(State2),
-    ?assert(ok == Res).
+    ?assertEqual(ok, Res).
 
 -spec emits_warnings(ct_suite:ct_config()) -> ok | no_return().
 emits_warnings(_Config) ->
@@ -54,8 +54,9 @@ emits_warnings(_Config) ->
     Files = {files, ["src/test_warning.erl"]},
     State2 = rebar_state:set(State1, spellcheck, [Files]),
     %% Our parsers don't crash on unparseable or non-existent files
-    {Res, _} = spellcheck(State2),
-    ?assert(error == Res).
+    {error, ErrorMsg} = spellcheck(State2),
+    %% Check warning message
+    ?assertEqual(ErrorMsg, string:find(ErrorMsg, "spellcheck detect warning emits:")).
 
 %% =============================================================================
 %% Helpers
@@ -63,15 +64,12 @@ emits_warnings(_Config) ->
 
 -spec spellcheck(any()) -> any().
 spellcheck(State) ->
-    rebar3_sheldon_prv:do(
-        rebar_state:command_parsed_args(State, {[{output, "spellchecked"}], something})).
+    rebar3_sheldon_prv:do(State).
 
 -spec init() -> any().
 init() ->
-    {ok, State} =
-        rebar_prv_app_discovery:do(
-            rebar_state:new()),
-    rebar3_sheldon:init(State).
+    rebar3_sheldon:init(
+        rebar_state:new()).
 
 -spec init_test_app() -> any().
 init_test_app() ->

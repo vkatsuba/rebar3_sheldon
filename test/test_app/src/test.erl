@@ -9,6 +9,11 @@
 %% Hello commit  tab
 -spec hello() -> ok.
 hello() ->
+    MultiString = "a " "string " "with " "multiple " "pieces",
+    MultiBinary = <<"a " "binary " "with " "multiple " "pieces">>,
+    AnotherMultiBinary =
+        <<"a ", "binary ", "with ", "multiple ", "pieces ", "separated ", "by ", "commas ">>,
+    EscapedString = "a string with \"quotes\"",
     HelloWorld = "Hello
       World!",
     io_format("~p~n", [HelloWorld]),

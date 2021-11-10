@@ -1,6 +1,6 @@
 {application,
  rebar3_sheldon,
- [{description, "A rebar plugin"},
+ [{description, "A rebar plugin for spellchecking"},
   {vsn, git},
   {applications, [kernel, stdlib, sheldon]},
   {env, []},
