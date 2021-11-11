@@ -21,44 +21,11 @@ Then just call your plugin directly in an existing application:
 $ rebar3 spellcheck
 ===> Fetching rebar3_sheldon
 ===> Compiling rebar3_sheldon
-$ ./rebar3 spellcheck
-===> spellcheck detect warning emits:[#{filename => "src/application.erl",
-                                    line => 2,
-                                    reason =>
-                                        #{bazinga => <<"Too bad Leonard">>,
-                                          misspelled_words =>
-                                              [#{candidates =>
-                                                     ["commit","commot",
-                                                      "comdt","comet","compt",
-                                                      "comte","comdt","comet",
-                                                      "compt","comte","comm",
-                                                      "comm.","comma","comme",
-                                                      "commo","commy","scomm"],
-                                                 line_number => 1,
-                                                 word => "Commt"}]},
-                                    string => "Commt",type => string},
-                                  #{filename => "test/shot_SUITE.erl",
-                                    line => 1,
-                                    reason =>
-                                        #{bazinga =>
-                                              <<"I'm exceedingly smart. I graduated college at fourteen. While my brother was getting an STD, I was getting a Ph.D. Penicillin can't take this away.">>,
-                                          misspelled_words =>
-                                              [#{candidates =>
-                                                     ["speeling","speiling",
-                                                      "spelding","spelling",
-                                                      "sperling","spieling",
-                                                      "apeling","pealing",
-                                                      "peeling","pelting",
-                                                      "perling","petling",
-                                                      "sealing","seeling",
-                                                      "selfing","seling",
-                                                      "selling","setling",
-                                                      "sapling","sipling",
-                                                      "spiling","spaeing",
-                                                      "spewing"],
-                                                 line_number => 1,
-                                                 word => "Speling"}]},
-                                    string => "Speling",type => string}]
+===> Youre welcome. And if he has twins, we can do all kinds of neat experiments on them.:
+test/test_SUITE.erl:1: string: The word "Speling" is unknown. Maybe you wanted to use "speeling" or "speiling" or ....?
+test/test_SUITE.erl:2: string: The word "Commt" is unknown. Maybe you wanted to use "commit" or "commot" or "comdt" ...?
+test/test_SUITE.erl:2: string: The word "fdfdf" is unknown.
+test/test_SUITE.erl:3: comment: The word "Unicode" is unknown. Maybe you wanted to use "uncoded"?
 ```
 
 ## Config
