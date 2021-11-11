@@ -59,7 +59,8 @@ do(State) ->
         [] ->
             {ok, State};
         Warnings -> %% @TODO: sheldon will return warning for TODO word
-            {error, io_lib:format("spellcheck detect warning emits: ~p", [Warnings])}
+            [#{reason := #{bazinga := SheldonMsg}} | _] = Warnings,
+            {error, format_results({unicode:characters_to_list(SheldonMsg), Warnings})}
     end.
 
 -spec format_error(any()) -> iolist().
@@ -119,3 +120,58 @@ get_ignored_files(SpellcheckConfig) ->
 -spec get_ignore_regex(list()) -> [string()].
 get_ignore_regex(SpellcheckConfig) ->
     proplists:get_value(ignore_regex, SpellcheckConfig, undefined).
+
+%% =============================================================================
+%% Error formatter
+%% =============================================================================
+
+-spec format_results({string(), [maps:map()]}) -> string().
+format_results({SheldonMsg, Results}) ->
+    lists:foldr(fun(Result, Acc) -> [Acc, format_result(Result)] end,
+                SheldonMsg ++ ":\n",
+                Results).
+
+-spec format_result(maps:map()) -> io:data().
+format_result(#{reason := #{misspelled_words := Misspelled}} = Data) ->
+    format_sheldon(Misspelled, Data, []).
+
+-spec format_text(string(), list()) -> string().
+format_text(Text, Args) ->
+    Formatted = io_lib:format(Text, Args),
+    unicode:characters_to_list(Formatted).
+
+-spec format_sheldon(list(), maps:map(), list()) -> string().
+format_sheldon([], _, Acc) ->
+    Acc;
+format_sheldon([#{candidates := [], word := Word} | T],
+               #{file := File,
+                 line := Line,
+                 type := Type} =
+                   Data,
+               Acc) ->
+    NewAcc =
+        [Acc,
+         format_text("~ts:~tp: The word ~p in ~p is unknown.", [File, Line, Word, Type]),
+         $\n],
+    format_sheldon(T, Data, NewAcc);
+format_sheldon([#{candidates := Candidates, word := Word} | T],
+               #{file := File,
+                 line := Line,
+                 type := Type} =
+                   Data,
+               Acc) ->
+    FormatCandidates = format_sheldon_candidates(Candidates, []),
+    NewAcc =
+        [Acc,
+         format_text("~ts:~tp: The word ~p in ~p is unknown. Maybe you wanted to use ~ts?",
+                     [File, Line, Word, Type, FormatCandidates]),
+         $\n],
+    format_sheldon(T, Data, NewAcc).
+
+-spec format_sheldon_candidates([any()], [[[any()] | char()]]) -> [[[any()] | char()]].
+format_sheldon_candidates([], Acc) ->
+    Acc;
+format_sheldon_candidates([Candidate], Acc) ->
+    [Acc, format_text("~p", [Candidate])];
+format_sheldon_candidates([Candidate | T], Acc) ->
+    format_sheldon_candidates(T, [Acc, format_text("~p or ", [Candidate])]).

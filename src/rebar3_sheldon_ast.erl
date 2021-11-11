@@ -29,7 +29,7 @@ spellcheck([Filename | T], Acc, RegEx) ->
                            ok ->
                                Res;
                            Warnings ->
-                               [#{filename => Filename,
+                               [#{file => Filename,
                                   line => Line,
                                   type => Type,
                                   string => Str,
