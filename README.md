@@ -27,10 +27,10 @@ $ rebar3 spellcheck
 ===> Fetching rebar3_sheldon
 ===> Compiling rebar3_sheldon
 ===> Youre welcome. And if he has twins, we can do all kinds of neat experiments on them.:
-test/test_SUITE.erl:1: string: The word "Speling" is unknown. Maybe you wanted to use "speeling" or "speiling" or ....?
-test/test_SUITE.erl:2: string: The word "Commt" is unknown. Maybe you wanted to use "commit" or "commot" or "comdt" ...?
-test/test_SUITE.erl:2: string: The word "fdfdf" is unknown.
-test/test_SUITE.erl:3: comment: The word "Unicode" is unknown. Maybe you wanted to use "uncoded"?
+test/test_SUITE.erl:1: The word "Speling" in string is unknown. Maybe you wanted to use "speeling" or "speiling" or ....?
+test/test_SUITE.erl:2: The word "Commt" in string is unknown. Maybe you wanted to use "commit" or "commot" or "comdt" ...?
+test/test_SUITE.erl:2: The word "fdfdf" in string is unknown.
+test/test_SUITE.erl:3: The word "Unicode" in comment is unknown. Maybe you wanted to use "uncoded"?
 ```
 
 ## Config
