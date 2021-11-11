@@ -108,10 +108,13 @@ collect_comments([{Line, _Column, _Indent, Comments} | T], AccC, RegEx) ->
 
 -spec re_replace(string() | binary()) -> string().
 re_replace(Str) ->
-    re:replace(Str, "%|@", "", [global, {return, list}]).
+    re:replace(
+        unicode:characters_to_binary(Str), "%|@", "", [global, {return, list}]).
 
 -spec is_ignore(string(), string() | undefined) -> boolean().
 is_ignore(_, undefined) ->
     false;
 is_ignore(String, RegEx) ->
-    re:run(String, RegEx) /= nomatch.
+    re:run(
+        unicode:characters_to_binary(String), RegEx)
+    /= nomatch.

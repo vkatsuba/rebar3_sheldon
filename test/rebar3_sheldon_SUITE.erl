@@ -6,11 +6,11 @@
 -include_lib("stdlib/include/assert.hrl"). % Assertion macros for convenience
 
 -export([all/0, groups/0, init_per_testcase/2, end_per_testcase/2]).
--export([test_app/1, no_good_files/1, emits_warnings/1, ignore_regex/1]).
+-export([test_app/1, no_good_files/1, emits_warnings/1, ignore_regex/1, unicode/1]).
 
 -spec all() -> [ct_suite:ct_test_def(), ...].
 all() ->
-    [test_app, no_good_files, emits_warnings, ignore_regex].
+    [test_app, no_good_files, emits_warnings, ignore_regex, unicode].
 
 -spec groups() -> [ct_suite:ct_group_def(), ...].
 groups() ->
@@ -66,8 +66,17 @@ ignore_regex(_Config) ->
     IgnoreRegEx = {ignore_regex, "[_@./#&+-=*]"},
     State2 = rebar_state:set(State1, spellcheck, [Files, IgnoreRegEx]),
     {Res, _} = spellcheck(State2),
-    %% Check warning message
     ?assertEqual(ok, Res).
+
+-spec unicode(ct_suite:ct_config()) -> ok | no_return().
+unicode(_Config) ->
+    ok = file:set_cwd("../../../../test/test_app"),
+    {ok, State1} = init(),
+    Files = {files, ["src/test_unicode.erl"]},
+    State2 = rebar_state:set(State1, spellcheck, [Files]),
+    {error, ErrorMsg} = spellcheck(State2),
+    %% Check warning message
+    ?assertEqual(ErrorMsg, string:find(ErrorMsg, "spellcheck detect warning emits:")).
 
 %% =============================================================================
 %% Helpers
@@ -96,6 +105,10 @@ init_test_app() ->
           "src/*.hrl"]},
     IgnoredFiles =
         {ignore,
-         ["src/*_ignore.erl", "src/*_broken.erl", "src/*_warning.erl", "src/*_ignore_regex.erl"]},
+         ["src/*_ignore.erl",
+          "src/*_broken.erl",
+          "src/*_warning.erl",
+          "src/*_ignore_regex.erl",
+          "src/*_unicode.erl"]},
     IgnoreRegEx = {ignore_regex, "[_@./#&+-=*]"},
     rebar_state:set(State1, spellcheck, [Files, IgnoredFiles, IgnoreRegEx]).
