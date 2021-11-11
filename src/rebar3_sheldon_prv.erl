@@ -151,7 +151,7 @@ format_sheldon([#{candidates := [], word := Word} | T],
                Acc) ->
     NewAcc =
         [Acc,
-         format_text("~ts:~tp: ~ts: The word ~p is unknown.", [File, Line, Type, Word]),
+         format_text("~ts:~tp: The word ~p in ~ts is unknown.", [File, Line, Type, Word]),
          $\n],
     format_sheldon(T, Data, NewAcc);
 format_sheldon([#{candidates := Candidates, word := Word} | T],
@@ -163,7 +163,7 @@ format_sheldon([#{candidates := Candidates, word := Word} | T],
     FormatCandidates = format_sheldon_candidates(Candidates, []),
     NewAcc =
         [Acc,
-         format_text("~ts:~tp: ~ts: The word ~p is unknown. Maybe you wanted to use ~ts?",
+         format_text("~ts:~tp: The word ~p in ~ts is unknown. Maybe you wanted to use ~ts?",
                      [File, Line, Type, Word, FormatCandidates]),
          $\n],
     format_sheldon(T, Data, NewAcc).
