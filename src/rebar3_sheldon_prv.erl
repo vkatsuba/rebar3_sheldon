@@ -127,7 +127,7 @@ get_ignore_regex(SpellcheckConfig) ->
 
 -spec format_results({string(), [maps:map()]}) -> string().
 format_results({SheldonMsg, Results}) ->
-    lists:foldr(fun(Result, Acc) -> [Acc, format_result(Result), $\n] end,
+    lists:foldr(fun(Result, Acc) -> [Acc, format_result(Result)] end,
                 SheldonMsg ++ ":\n",
                 Results).
 
@@ -160,9 +160,18 @@ format_sheldon([#{candidates := Candidates, word := Word} | T],
                  type := Type} =
                    Data,
                Acc) ->
+    FormatCandidates = format_sheldon_candidates(Candidates, []),
     NewAcc =
         [Acc,
-         format_text("~ts:~tp: ~ts: The word ~p is unknown. Maybe you wanted to use ~p",
-                     [File, Line, Type, Word, Candidates]),
+         format_text("~ts:~tp: ~ts: The word ~p is unknown. Maybe you wanted to use ~ts?",
+                     [File, Line, Type, Word, FormatCandidates]),
          $\n],
     format_sheldon(T, Data, NewAcc).
+
+-spec format_sheldon_candidates([any()], [[[any()] | char()]]) -> [[[any()] | char()]].
+format_sheldon_candidates([], Acc) ->
+    Acc;
+format_sheldon_candidates([Candidate], Acc) ->
+    [Acc, format_text("~p", [Candidate])];
+format_sheldon_candidates([Candidate | T], Acc) ->
+    format_sheldon_candidates(T, [Acc, format_text("~p or ", [Candidate])]).

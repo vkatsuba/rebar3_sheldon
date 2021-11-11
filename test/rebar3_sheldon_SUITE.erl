@@ -116,5 +116,5 @@ init_test_app() ->
     rebar_state:set(State1, spellcheck, [Files, IgnoredFiles, IgnoreRegEx]).
 
 -spec get_error_msg(tuple()) -> any().
-get_error_msg({error, [_, Error, _]}) ->
+get_error_msg({error, [_, [_, Error, _]]}) ->
     Error.
