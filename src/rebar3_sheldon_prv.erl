@@ -59,7 +59,7 @@ do(State) ->
         [] ->
             {ok, State};
         Warnings -> %% @TODO: sheldon will return warning for TODO word
-            {error, io_lib:format("spellcheck detect warning emits: ~p", [Warnings])}
+            {error, format_results({"spellcheck detect warning emits", Warnings})}
     end.
 
 -spec format_error(any()) -> iolist().
@@ -119,3 +119,25 @@ get_ignored_files(SpellcheckConfig) ->
 -spec get_ignore_regex(list()) -> [string()].
 get_ignore_regex(SpellcheckConfig) ->
     proplists:get_value(ignore_regex, SpellcheckConfig, undefined).
+
+%% =============================================================================
+%% Error formatter
+%% =============================================================================
+
+-spec format_results({string(), [maps:map()]}) -> string().
+format_results({SheldonMsg, Results}) ->
+    lists:foldr(fun(Result, Acc) -> [Acc, format_result(Result), $\n] end,
+                SheldonMsg ++ ":\n",
+                Results).
+
+-spec format_result(maps:map()) -> binary().
+format_result(#{file := File,
+                line := Line,
+                string := Msg,
+                type := Type}) ->
+    format_text("~ts:~tp: ~ts: ~ts", [File, Line, Type, Msg]).
+
+-spec format_text(string(), list()) -> binary().
+format_text(Text, Args) ->
+    Formatted = io_lib:format(Text, Args),
+    unicode:characters_to_binary(Formatted).
