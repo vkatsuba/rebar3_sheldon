@@ -1,4 +1,9 @@
 # rebar3_sheldon
+[![Hex.pm Version][hexpm version]][hexpm]
+[![Hex.pm Downloads][hexpm downloads]][hexpm]
+[![Build Status][gh badge]][gh]
+[![Erlang Versions][erlang version badge]][gh]
+
 
 A rebar plugin for spellchecking.
 
@@ -13,7 +18,7 @@ $ rebar3 compile
 Add the plugin to your rebar config:
 
 ```erlang
-{project_plugins, [{rebar3_sheldon, "~> 0.1.0"}]}.
+{project_plugins, [{rebar3_sheldon, "~> 0.1.2"}]}.
 ```
 
 Then just call your plugin directly in an existing application:
@@ -38,3 +43,11 @@ Example:
     {options, #{dummy => option}}
 ]}.
 ```
+
+<!-- Badges -->
+[hexpm]: https://hex.pm/packages/rebar3_sheldon
+[hexpm version]: https://img.shields.io/hexpm/v/rebar3_sheldon.svg?style=flat-square
+[hexpm downloads]: https://img.shields.io/hexpm/dt/rebar3_sheldon.svg?style=flat-square
+[gh]: https://github.com/vkatsuba/rebar3_sheldon/actions/workflows/ci.yml
+[gh badge]: https://img.shields.io/github/workflow/status/vkatsuba/rebar3_sheldon/CI?style=flat-square
+[erlang version badge]: https://img.shields.io/badge/erlang-23.0%20to%2024.1-blue.svg?style=flat-square
