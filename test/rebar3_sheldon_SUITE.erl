@@ -54,9 +54,10 @@ emits_warnings(_Config) ->
     Files = {files, ["src/test_warning.erl"]},
     State2 = rebar_state:set(State1, spellcheck, [Files]),
     %% Our parsers don't crash on unparseable or non-existent files
-    {error, ErrorMsg} = spellcheck(State2),
+    Error = spellcheck(State2),
+    ErrorMsg = get_error_msg(Error),
     %% Check warning message
-    ?assertEqual(ErrorMsg, string:find(ErrorMsg, "spellcheck detect warning emits:")).
+    ?assertEqual(ErrorMsg, string:find(ErrorMsg, "src/test_warning.erl:3:")).
 
 -spec ignore_regex(ct_suite:ct_config()) -> ok | no_return().
 ignore_regex(_Config) ->
@@ -74,9 +75,10 @@ unicode(_Config) ->
     {ok, State1} = init(),
     Files = {files, ["src/test_unicode.erl"]},
     State2 = rebar_state:set(State1, spellcheck, [Files]),
-    {error, ErrorMsg} = spellcheck(State2),
+    Error = spellcheck(State2),
+    ErrorMsg = get_error_msg(Error),
     %% Check warning message
-    ?assertEqual(ErrorMsg, string:find(ErrorMsg, "spellcheck detect warning emits:")).
+    ?assertEqual(ErrorMsg, string:find(ErrorMsg, "src/test_unicode.erl:8:")).
 
 %% =============================================================================
 %% Helpers
@@ -112,3 +114,7 @@ init_test_app() ->
           "src/*_unicode.erl"]},
     IgnoreRegEx = {ignore_regex, "[_@./#&+-=*]"},
     rebar_state:set(State1, spellcheck, [Files, IgnoredFiles, IgnoreRegEx]).
+
+-spec get_error_msg(tuple()) -> any().
+get_error_msg({error, [_, Error, _]}) ->
+    Error.

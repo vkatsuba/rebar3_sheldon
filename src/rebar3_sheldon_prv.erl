@@ -59,7 +59,8 @@ do(State) ->
         [] ->
             {ok, State};
         Warnings -> %% @TODO: sheldon will return warning for TODO word
-            {error, format_results({"spellcheck detect warning emits", Warnings})}
+            [#{reason := #{bazinga := SheldonMsg}} | _] = Warnings,
+            {error, format_results({unicode:characters_to_list(SheldonMsg), Warnings})}
     end.
 
 -spec format_error(any()) -> iolist().
@@ -130,14 +131,14 @@ format_results({SheldonMsg, Results}) ->
                 SheldonMsg ++ ":\n",
                 Results).
 
--spec format_result(maps:map()) -> binary().
+-spec format_result(maps:map()) -> string().
 format_result(#{file := File,
                 line := Line,
                 string := Msg,
                 type := Type}) ->
     format_text("~ts:~tp: ~ts: ~ts", [File, Line, Type, Msg]).
 
--spec format_text(string(), list()) -> binary().
+-spec format_text(string(), list()) -> string().
 format_text(Text, Args) ->
     Formatted = io_lib:format(Text, Args),
-    unicode:characters_to_binary(Formatted).
+    unicode:characters_to_list(Formatted).
