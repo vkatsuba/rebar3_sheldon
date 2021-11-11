@@ -1,21 +1,17 @@
-name: CI
+name: Publish to hex.pm
 
 on:
   push:
-  pull_request:
-    branches: [ $default-branch ]
-  release:
-    types:
-      - created
-  workflow_dispatch:
+    tags:
+      - '*'
 
 jobs:
-  ubuntu:
+  publish:
     name: "Ubuntu"
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        otp: [23.3, 24.1]
+        otp: [24.1]
         rebar: [3.17.0]
     steps:
     - uses: actions/checkout@v2
@@ -23,7 +19,9 @@ jobs:
       with:
         otp-version: ${{matrix.otp}}
         rebar3-version: ${{matrix.rebar}}
-    - name: Format check
-      run: rebar3 format --verify
-    - name: Tests
-      run: rebar3 test
+    - name: Publish to Hex.pm
+      env:
+        HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+      run: |
+           rebar3 edoc
+           rebar3 hex publish -r hexpm --yes

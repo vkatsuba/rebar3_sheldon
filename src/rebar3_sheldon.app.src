@@ -1,0 +1,8 @@
+{application,
+ rebar3_sheldon,
+ [{description, "A rebar plugin for spellchecking"},
+  {vsn, git},
+  {applications, [kernel, stdlib, sheldon]},
+  {env, []},
+  {licenses, ["Apache 2.0"]},
+  {links, [{"github", "https://github.com/vkatsuba/rebar3_sheldon.git"}]}]}.

@@ -1,62 +1,73 @@
-# rebar3_plugin
+# rebar3_sheldon
 
-A `rebar_plugin` is a simple [rebar3](https://rebar3.readme.io/) `GitHub` template which includes
-the basic functionality that will be used in any `rebar3` plugin, as well as a ready-made template for `GitHub Actions`, `GitHub Issue Templates`, and the configuration for some useful tools like `dialyzer`, `xref`, `hank`, etc.
+A rebar plugin for spellchecking.
 
-## How it works
-* On the main page of this repository, you should find and click a button called `Use this template`.
-* Add `Repository name` and `Description` for your particular plugin.
-* Then clone and build your template plugin and push it into your GitHub repository
-* Finally, run `./bootsrap` to setup your repository using the name you've chosen.
+## Build
+
 ```sh
-$ git clone https://github.com/yourname/your_rebar3_plugin_repo.git
-$ cd your_rebar3_plugin_repo
-$ ./bootstrap
-$ git add .
-$ git commit -m "Base rebar3 template"
-$ git push origin main
+$ rebar3 compile
 ```
-## Commands
-Currently supports the following commands:
-* `bootstrap` - build by default with adding useful tools like `dialyzer`, `xref`, `hank`, etc
-```sh
-$ ./bootstrap
-$ tree -a
-├── .github
-│   ├── ISSUE_TEMPLATE
-│   │   ├── bug_report.md
-│   │   ├── feature_request.md
-│   │   └── other_issues.md
-│   └── workflows
-│       └── ci.yaml
-├── src
-│   ├── rebar3_plugin.app.src
-│   ├── rebar3_plugin.erl
-│   └── rebar3_plugin_prv.erl
-└── test
-    └── rebar3_plugin_SUITE.erl
-├── .gitignore
-├── LICENSE
-├── README.md
-├── CHANGELOG.md
-├── rebar.config
-├── elvis.config
-├── rebar.lock
+
+## Use
+
+Add the plugin to your rebar config:
+
+```erlang
+{project_plugins, [{rebar3_sheldon, "~> 0.1.0"}]}.
 ```
-* `bootstrap clean` - build without adding useful tools, configs, GitHub folder
+
+Then just call your plugin directly in an existing application:
 ```sh
-$ ./bootstrap
-$ tree -a
-├── src
-│   ├── rebar3_plugin.app.src
-│   ├── rebar3_plugin.erl
-│   └── rebar3_plugin_prv.erl
-└── test
-    └── rebar3_plugin_SUITE.erl
-├── .gitignore
-├── LICENSE
-├── README.md
-├── CHANGELOG.md
-├── rebar.config
-├── rebar.lock
+$ rebar3 spellcheck
+===> Fetching rebar3_sheldon
+===> Compiling rebar3_sheldon
+$ ./rebar3 spellcheck
+===> spellcheck detect warning emits:[#{filename => "src/application.erl",
+                                    line => 2,
+                                    reason =>
+                                        #{bazinga => <<"Too bad Leonard">>,
+                                          misspelled_words =>
+                                              [#{candidates =>
+                                                     ["commit","commot",
+                                                      "comdt","comet","compt",
+                                                      "comte","comdt","comet",
+                                                      "compt","comte","comm",
+                                                      "comm.","comma","comme",
+                                                      "commo","commy","scomm"],
+                                                 line_number => 1,
+                                                 word => "Commt"}]},
+                                    string => "Commt",type => string},
+                                  #{filename => "test/shot_SUITE.erl",
+                                    line => 1,
+                                    reason =>
+                                        #{bazinga =>
+                                              <<"I'm exceedingly smart. I graduated college at fourteen. While my brother was getting an STD, I was getting a Ph.D. Penicillin can't take this away.">>,
+                                          misspelled_words =>
+                                              [#{candidates =>
+                                                     ["speeling","speiling",
+                                                      "spelding","spelling",
+                                                      "sperling","spieling",
+                                                      "apeling","pealing",
+                                                      "peeling","pelting",
+                                                      "perling","petling",
+                                                      "sealing","seeling",
+                                                      "selfing","seling",
+                                                      "selling","setling",
+                                                      "sapling","sipling",
+                                                      "spiling","spaeing",
+                                                      "spewing"],
+                                                 line_number => 1,
+                                                 word => "Speling"}]},
+                                    string => "Speling",type => string}]
+```
+
+## Config
+Example:
+```erlang
+{spellcheck, [
+    {files, ["src/*.erl", "src/*/*.erl", "include/*.hrl"]},
+    {ignore, ["src/*_ignore.erl"]},
+    {ignore_regex, "[_@./#&+-=*]"},
+    {options, #{dummy => option}}
+]}.
 ```
