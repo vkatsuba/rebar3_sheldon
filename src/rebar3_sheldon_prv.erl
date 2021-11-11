@@ -131,14 +131,38 @@ format_results({SheldonMsg, Results}) ->
                 SheldonMsg ++ ":\n",
                 Results).
 
--spec format_result(maps:map()) -> string().
-format_result(#{file := File,
-                line := Line,
-                string := Msg,
-                type := Type}) ->
-    format_text("~ts:~tp: ~ts: ~ts", [File, Line, Type, Msg]).
+-spec format_result(maps:map()) -> io:data().
+format_result(#{reason := #{misspelled_words := Misspelled}} = Data) ->
+    format_sheldon(Misspelled, Data, []).
 
 -spec format_text(string(), list()) -> string().
 format_text(Text, Args) ->
     Formatted = io_lib:format(Text, Args),
     unicode:characters_to_list(Formatted).
+
+-spec format_sheldon(list(), maps:map(), list()) -> string().
+format_sheldon([], _, Acc) ->
+    Acc;
+format_sheldon([#{candidates := [], word := Word} | T],
+               #{file := File,
+                 line := Line,
+                 type := Type} =
+                   Data,
+               Acc) ->
+    NewAcc =
+        [Acc,
+         format_text("~ts:~tp: ~ts: The word ~p is unknown.", [File, Line, Type, Word]),
+         $\n],
+    format_sheldon(T, Data, NewAcc);
+format_sheldon([#{candidates := Candidates, word := Word} | T],
+               #{file := File,
+                 line := Line,
+                 type := Type} =
+                   Data,
+               Acc) ->
+    NewAcc =
+        [Acc,
+         format_text("~ts:~tp: ~ts: The word ~p is unknown. Maybe you wanted to use ~p",
+                     [File, Line, Type, Word, Candidates]),
+         $\n],
+    format_sheldon(T, Data, NewAcc).
