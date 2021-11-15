@@ -6,11 +6,18 @@
 -include_lib("stdlib/include/assert.hrl"). % Assertion macros for convenience
 
 -export([all/0, groups/0, init_per_testcase/2, end_per_testcase/2]).
--export([test_app/1, no_good_files/1, emits_warnings/1, ignore_regex/1, unicode/1]).
+-export([test_app/1, no_good_files/1, emits_warnings/1, ignore_regex/1, unicode/1,
+         custom_dictionaries/1, custom_dictionaries_error/1]).
 
 -spec all() -> [ct_suite:ct_test_def(), ...].
 all() ->
-    [test_app, no_good_files, emits_warnings, ignore_regex, unicode].
+    [test_app,
+     no_good_files,
+     emits_warnings,
+     ignore_regex,
+     unicode,
+     custom_dictionaries_error,
+     custom_dictionaries].
 
 -spec groups() -> [ct_suite:ct_group_def(), ...].
 groups() ->
@@ -80,6 +87,34 @@ unicode(_Config) ->
     %% Check warning message
     ?assertEqual(ErrorMsg, string:find(ErrorMsg, "src/test_unicode.erl:8:")).
 
+-spec custom_dictionaries_error(ct_suite:ct_config()) -> ok | no_return().
+custom_dictionaries_error(_Config) ->
+    ok = file:set_cwd("../../../../test/test_app"),
+    {ok, State1} = init(),
+    Files = {files, ["src/test_custom_dictionary.erl"]},
+    Opts = [Files],
+    State2 = rebar_state:set(State1, spellcheck, Opts),
+    Error = spellcheck(State2),
+    ErrorMsg = get_error_msg(Error),
+    %% Check warning message
+    ?assertEqual(ErrorMsg, string:find(ErrorMsg, "src/test_custom_dictionary.erl:8:")).
+
+-spec custom_dictionaries(ct_suite:ct_config()) -> ok | no_return().
+custom_dictionaries(_Config) ->
+    ok = application:stop(sheldon),
+    ok = file:set_cwd("../../../../test/test_app"),
+    {ok, State1} = init(),
+    Files = {files, ["src/test_custom_dictionary.erl"]},
+    DefDict = {default_dictionary, "priv/dictionaries/default_dictionary.txt"},
+    Dicts =
+        {additional_dictionaries,
+         ["priv/dictionaries/additional_dictionary_1.txt",
+          "priv/dictionaries/additional_dictionary_2.txt"]},
+    Opts = [Files, DefDict, Dicts],
+    State2 = rebar_state:set(State1, spellcheck, Opts),
+    {Res, _} = spellcheck(State2),
+    ?assertEqual(ok, Res).
+
 %% =============================================================================
 %% Helpers
 %% =============================================================================
@@ -111,7 +146,8 @@ init_test_app() ->
           "src/*_broken.erl",
           "src/*_warning.erl",
           "src/*_ignore_regex.erl",
-          "src/*_unicode.erl"]},
+          "src/*_unicode.erl",
+          "src/*_dictionary.erl"]},
     IgnoreRegEx = {ignore_regex, "[_@./#&+-=*]"},
     rebar_state:set(State1, spellcheck, [Files, IgnoredFiles, IgnoreRegEx]).
 
