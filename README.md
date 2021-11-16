@@ -18,7 +18,7 @@ $ rebar3 compile
 Add the plugin to your rebar config:
 
 ```erlang
-{project_plugins, [{rebar3_sheldon, "~> 0.1.2"}]}.
+{project_plugins, [{rebar3_sheldon, "~> 0.1.3"}]}.
 ```
 
 Then just call your plugin directly in an existing application:
@@ -40,6 +40,8 @@ Example:
     {files, ["src/*.erl", "src/*/*.erl", "include/*.hrl"]},
     {ignore, ["src/*_ignore.erl"]},
     {ignore_regex, "[_@./#&+-=*]"},
+    {default_dictionary, "path/to/default_dictionary.txt"},
+    {additional_dictionaries, ["path/to/custom_dictionary_1.txt", "path/to/custom_dictionary_2.txt"]},
     {options, #{dummy => option}}
 ]}.
 ```

@@ -11,6 +11,5 @@
 
 -spec init(rebar_state:t()) -> {ok, rebar_state:t()}.
 init(State) ->
-    ok = sheldon:start(),
     {ok, State1} = rebar3_sheldon_prv:init(State),
     {ok, State1}.

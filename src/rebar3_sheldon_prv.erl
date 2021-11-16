@@ -36,6 +36,8 @@ do(State) ->
     SpellcheckConfig = rebar_state:get(State, spellcheck, []),
     ok = rebar_api:debug("Args: ~p", [Args]),
 
+    ok = sheldon_start(SpellcheckConfig),
+
     Apps =
         case rebar_state:current_app(State) of
             undefined ->
@@ -175,3 +177,22 @@ format_sheldon_candidates([Candidate], Acc) ->
     [Acc, format_text("~p", [Candidate])];
 format_sheldon_candidates([Candidate | T], Acc) ->
     format_sheldon_candidates(T, [Acc, format_text("~p or ", [Candidate])]).
+
+%% =============================================================================
+%% Start sheldon
+%% =============================================================================
+
+-spec sheldon_start(list()) -> ok.
+sheldon_start(Config) ->
+    Dictionary = proplists:get_value(default_dictionary, Config, undefined),
+    AdditionalDictionaries = proplists:get_value(additional_dictionaries, Config, []),
+    ok = set_sheldon_config(default_dictionary, Dictionary),
+    ok = set_sheldon_config(additional_dictionaries, AdditionalDictionaries),
+    ok = sheldon:start(),
+    ok.
+
+-spec set_sheldon_config(atom(), list() | undefined) -> ok.
+set_sheldon_config(_, undefined) ->
+    ok;
+set_sheldon_config(Key, Value) ->
+    application:set_env(sheldon, Key, Value).
