@@ -58,7 +58,7 @@ If you need to use a custom list of files for spellchecking, use the config opti
 If you need to ignore some files for spellchecking, use the config option `ignore`.
 If you need to ignore some particular strings or comments in your modules, use `ignore_regex` to set regular expressions and ignore the lines that match them.
 If you want to directly replace Sheldon's dictionary with your own one, you can replace using the config option `default_dictionary`.
-If `sheldon` dictionary is suitable but should be expanded - use `additional_dictionaries` option to set own dictionaries for expand `sheldon` dictionary.
+If you need to _expand_ Sheldon's dictionary with your own words, use the `additional_dictionaries` option pointing to your own dictionaries with which you want to expand Sheldon's.
 
 ### Options
 Currently supported next options of `spellcheck` configuration:
