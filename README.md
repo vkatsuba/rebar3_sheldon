@@ -4,7 +4,7 @@
 [![Build Status][gh badge]][gh]
 [![Erlang Versions][erlang version badge]][gh]
 
-A rebar plugin for spellchecking which is built based on [sheldon](https://github.com/inaka/sheldon).
+A rebar plugin for spellchecking code with [Sheldon](https://github.com/inaka/sheldon).
 
 ## Build
 
