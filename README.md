@@ -17,7 +17,7 @@ $ rebar3 compile
 Add the plugin to your rebar config:
 
 ```erlang
-{project_plugins, [{rebar3_sheldon, "~> 0.3.0"}]}.
+{project_plugins, [{rebar3_sheldon, "~> 0.3.1"}]}.
 ```
 
 Then just call your plugin directly in an existing application:
@@ -48,7 +48,7 @@ Usage: rebar3 spellcheck [-f <files>] [-i <ignore>] [-r <ignore_regex>]
 ```
 ### Short full example
 ```sh
-$ rebar3 spellcheck -f 'src/*.erl, test/*erl' -i 'include/*.hrl' -r '[_@./#&+-=*]' -d 'path/to/dict.txt' -a 'path/to.txt, additional_dict_1.txt'`
+$ rebar3 spellcheck -f 'src/*.erl, test/*erl' -i 'include/*.hrl' -r '[_@./#&+-=%*]' -d 'path/to/dict.txt' -a 'path/to.txt, additional_dict_1.txt'`
 ```
 
 ## Config
@@ -88,7 +88,7 @@ Currently supported options for `spellcheck` configuration through `rebar.config
 {spellcheck, [
     {files, ["src/*.erl", "src/*/*.erl", "include/*.hrl"]},
     {ignore, ["src/*_ignore.erl"]},
-    {ignore_regex, "[_@./#&+-=*]"},
+    {ignore_regex, "[_@./#&+-=%*]"},
     {default_dictionary, "path/to/default_dictionary.txt"},
     {additional_dictionaries, ["path/to/custom_dictionary_1.txt", "path/to/custom_dictionary_2.txt"]}
 ]}.

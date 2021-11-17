@@ -97,7 +97,8 @@ collect_comments([{Line, _Column, _Indent, Comments} | T], AccC, RegEx) ->
                             end
                     end,
                     [],
-                    Comments) ++ AccC,
+                    Comments)
+        ++ AccC,
     collect_comments(T, NewAccC, RegEx).
 
 -spec re_replace(string() | binary()) -> string().
