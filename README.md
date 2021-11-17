@@ -56,7 +56,7 @@ $ rebar3 spellcheck -f 'src/*.erl, test/*erl' -i 'include/*.hrl' -r '[_@./#&+-=*
 By default, the dictionary used is the one provided by [sheldon](https://github.com/inaka/sheldon).
 If you need to use a custom list of files for spellchecking, use the config option `files`.
 If you need to ignore some files for spellchecking, use the config option `ignore`.
-If need ignore some lines - use `ignore_regex` for set regular exemptions for ignore lines.
+If you need to ignore some particular strings or comments in your modules, use `ignore_regex` to set regular expressions and ignore the lines that match them.
 If `sheldon` dictionary is not suite at all - can be replaced by config option `default_dictionary`.
 If `sheldon` dictionary is suitable but should be expanded - use `additional_dictionaries` option to set own dictionaries for expand `sheldon` dictionary.
 
