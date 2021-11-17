@@ -61,7 +61,7 @@ If you want to directly replace Sheldon's dictionary with your own one, you can 
 If you need to _expand_ Sheldon's dictionary with your own words, use the `additional_dictionaries` option pointing to your own dictionaries with which you want to expand Sheldon's.
 
 ### Options
-Currently supported next options of `spellcheck` configuration:
+Currently supported options for `spellcheck` configuration through `rebar.config`:
 | Name                       | Type              | Description                           |
 | -------------------------- | ----------------- | --------------------------------------|
 | `files`                    | `[string(), ...]` | List of files for spellchecker        |
