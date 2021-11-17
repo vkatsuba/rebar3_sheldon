@@ -11,7 +11,16 @@
 
 -define(PROVIDER, spellcheck).
 -define(DEPS, []).
--define(OPTS, []).
+-define(OPTS,
+        [{files, $f, "files", string, "List of files for spellchecker"},
+         {ignore, $i, "ignore", string, "List of ignore files for spellchecker"},
+         {ignore_regex, $r, "ignore_regex", string, "Regular exemptions for ignore lines"},
+         {default_dictionary, $d, "default_dictionary", string, "Set default dictionary"},
+         {additional_dictionaries,
+          $a,
+          "additional_dictionaries",
+          string,
+          "List of additional dictionaries"}]).
 
 %% =============================================================================
 %% Public API
@@ -33,7 +42,9 @@ init(State) ->
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
     Args = parse_opts(State),
-    SpellcheckConfig = rebar_state:get(State, spellcheck, []),
+    Config = rebar_state:get(State, spellcheck, []),
+    SpellcheckConfig = prepare_config(Args, Config),
+
     ok = rebar_api:debug("Args: ~p", [Args]),
 
     ok = sheldon_start(SpellcheckConfig),
@@ -49,7 +60,7 @@ do(State) ->
     Dirs = [dir_for_app(AppInfo, Cwd) || AppInfo <- Apps],
 
     IgnoredFiles = get_ignored_files(SpellcheckConfig),
-    Files = get_files(Args, Dirs, SpellcheckConfig) -- IgnoredFiles,
+    Files = get_files(Dirs, SpellcheckConfig) -- IgnoredFiles,
 
     rebar_api:debug("Found ~p files: ~p", [length(Files), Files]),
 
@@ -85,28 +96,21 @@ dir_for_app(AppInfo, Cwd) ->
             rebar_app_info:dir(AppInfo), Cwd),
     Dir.
 
--spec get_files(proplists:proplist(), [file:filename_all() | []], list()) ->
-                   [file:filename_all()].
-get_files(Args, Dirs, SpellcheckConfig) ->
-    FilesFromArgs = [Value || {files, Value} <- Args],
+-spec get_files([file:filename_all() | []], [{_, _}]) -> [file:filename_all()].
+get_files(Dirs, SpellcheckConfig) ->
     {Patterns, Dirs1} =
-        case FilesFromArgs of
-            [] ->
-                case proplists:get_value(files, SpellcheckConfig, undefined) of
-                    undefined ->
-                        {["include/**/*.[he]rl",
-                          "include/**/*.app.src",
-                          "src/**/*.[he]rl",
-                          "src/**/*.app.src",
-                          "test/**/*.[he]rl",
-                          "test/**/*.app.src",
-                          "{rebar,elvis,sys}.config"],
-                         Dirs};
-                    Wildcards ->
-                        {Wildcards, []}
-                end;
-            Files ->
-                {Files, []}
+        case proplists:get_value(files, SpellcheckConfig, undefined) of
+            undefined ->
+                {["include/**/*.[he]rl",
+                  "include/**/*.app.src",
+                  "src/**/*.[he]rl",
+                  "src/**/*.app.src",
+                  "test/**/*.[he]rl",
+                  "test/**/*.app.src",
+                  "{rebar,elvis,sys}.config"],
+                 Dirs};
+            Wildcards ->
+                {Wildcards, []}
         end,
     %% Special handling needed for "" (current directory)
     %% so that ignore-lists work in an expected way.
@@ -114,12 +118,12 @@ get_files(Args, Dirs, SpellcheckConfig) ->
     ++ [filename:join(Dir, File)
         || Dir <- Dirs1, Dir =/= "", Pattern <- Patterns, File <- filelib:wildcard(Pattern, Dir)].
 
--spec get_ignored_files(list()) -> [file:filename_all()].
+-spec get_ignored_files([{_, _}]) -> [file:filename_all()].
 get_ignored_files(SpellcheckConfig) ->
     Patterns = proplists:get_value(ignore, SpellcheckConfig, []),
     [IgnoredFile || Pat <- Patterns, IgnoredFile <- filelib:wildcard(Pat)].
 
--spec get_ignore_regex(list()) -> [string()].
+-spec get_ignore_regex([{_, _}]) -> [string()].
 get_ignore_regex(SpellcheckConfig) ->
     proplists:get_value(ignore_regex, SpellcheckConfig, undefined).
 
@@ -182,7 +186,7 @@ format_sheldon_candidates([Candidate | T], Acc) ->
 %% Start sheldon
 %% =============================================================================
 
--spec sheldon_start(list()) -> ok.
+-spec sheldon_start([{_, _}]) -> ok.
 sheldon_start(Config) ->
     Dictionary = proplists:get_value(default_dictionary, Config, undefined),
     AdditionalDictionaries = proplists:get_value(additional_dictionaries, Config, []),
@@ -196,3 +200,18 @@ set_sheldon_config(_, undefined) ->
     ok;
 set_sheldon_config(Key, Value) ->
     application:set_env(sheldon, Key, Value).
+
+-spec prepare_config([{_, _}], [{_, _}]) -> [{_, _}].
+prepare_config(Args0, Config0) ->
+    Config = maps:from_list(Config0),
+    Args =
+        lists:foldl(fun ({K, V}, Acc)
+                            when K =:= files; K =:= ignore; K =:= additional_dictionaries ->
+                            Acc#{K => string:tokens(V, ", ")};
+                        ({K, V}, Acc) ->
+                            Acc#{K => V}
+                    end,
+                    #{},
+                    Args0),
+    All = maps:merge(Config, Args),
+    maps:to_list(All).

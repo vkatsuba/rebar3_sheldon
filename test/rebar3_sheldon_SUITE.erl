@@ -7,7 +7,7 @@
 
 -export([all/0, groups/0, init_per_testcase/2, end_per_testcase/2]).
 -export([test_app/1, no_good_files/1, emits_warnings/1, ignore_regex/1, unicode/1,
-         custom_dictionaries/1, custom_dictionaries_error/1]).
+         custom_dictionaries/1, custom_dictionaries_error/1, command/1]).
 
 -spec all() -> [ct_suite:ct_test_def(), ...].
 all() ->
@@ -17,7 +17,8 @@ all() ->
      ignore_regex,
      unicode,
      custom_dictionaries_error,
-     custom_dictionaries].
+     custom_dictionaries,
+     command].
 
 -spec groups() -> [ct_suite:ct_group_def(), ...].
 groups() ->
@@ -114,6 +115,27 @@ custom_dictionaries(_Config) ->
     State2 = rebar_state:set(State1, spellcheck, Opts),
     {Res, _} = spellcheck(State2),
     ?assertEqual(ok, Res).
+
+-spec command(ct_suite:ct_config()) -> ok | no_return().
+command(_Config) ->
+    ok = application:stop(sheldon),
+    ok = file:set_cwd("../../../../test/test_app"),
+    {ok, State1} = init(),
+    DefDict = {default_dictionary, "priv/dictionaries/default_dictionary.txt"},
+    Opts = [DefDict],
+    Commands =
+        [{files, "src/test_custom_dictionary.erl"},
+         {additional_dictionaries,
+          "priv/dictionaries/additional_dictionary_1.txt,"
+          ++ "priv/dictionaries/additional_dictionary_2.txt"}],
+    State2 = rebar_state:set(State1, spellcheck, Opts),
+    {Res, _} = command(State2, Commands),
+    ?assertEqual(ok, Res).
+
+-spec command(any(), any()) -> any().
+command(State, Commands) ->
+    rebar3_sheldon_prv:do(
+        rebar_state:command_parsed_args(State, {Commands, something})).
 
 %% =============================================================================
 %% Helpers
