@@ -53,7 +53,7 @@ $ rebar3 spellcheck -f 'src/*.erl, test/*erl' -i 'include/*.hrl' -r '[_@./#&+-=*
 
 ## Config
 ### Description
-By default is used dictionary of [sheldon](https://github.com/inaka/sheldon).
+By default, the dictionary used is the one provided by [sheldon](https://github.com/inaka/sheldon).
 If need use custom list of files for spellchecking - use config option `files`.
 If need ignore some files for spellchecking - use config option `ignore`.
 If need ignore some lines - use `ignore_regex` for set regular exemptions for ignore lines.
