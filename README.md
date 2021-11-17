@@ -57,7 +57,7 @@ By default, the dictionary used is the one provided by [sheldon](https://github.
 If you need to use a custom list of files for spellchecking, use the config option `files`.
 If you need to ignore some files for spellchecking, use the config option `ignore`.
 If you need to ignore some particular strings or comments in your modules, use `ignore_regex` to set regular expressions and ignore the lines that match them.
-If `sheldon` dictionary is not suite at all - can be replaced by config option `default_dictionary`.
+If you want to directly replace Sheldon's dictionary with your own one, you can replace using the config option `default_dictionary`.
 If `sheldon` dictionary is suitable but should be expanded - use `additional_dictionaries` option to set own dictionaries for expand `sheldon` dictionary.
 
 ### Options
