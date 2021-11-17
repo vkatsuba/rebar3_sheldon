@@ -81,29 +81,24 @@ collect_comments([], Acc, _) ->
     Acc;
 collect_comments([{Line, _Column, _Indent, Comments} | T], AccC, RegEx) ->
     NewAccC =
-        case Comments of
-            [Comment] ->
-                [{Line, comment, re_replace(Comment)} | AccC];
-            Comments ->
-                lists:foldl(fun (Comment, [{L, comment, _} | _] = Acc) ->
-                                    case is_ignore(Comment, RegEx) of
-                                        true ->
-                                            Acc;
-                                        false ->
-                                            [{L + 1, comment, re_replace(Comment)} | Acc]
-                                    end;
-                                (Comment, Acc) ->
-                                    case is_ignore(Comment, RegEx) of
-                                        true ->
-                                            Acc;
-                                        false ->
-                                            [{Line, comment, re_replace(Comment)} | Acc]
-                                    end
-                            end,
-                            [],
-                            Comments)
-                ++ AccC %% @TODO: simplify order of multi comments
-        end,
+        lists:foldl(fun (Comment, [{L, comment, _} | _] = Acc) ->
+                            case is_ignore(Comment, RegEx) of
+                                true ->
+                                    Acc;
+                                false ->
+                                    [{L + 1, comment, re_replace(Comment)} | Acc]
+                            end;
+                        (Comment, Acc) ->
+                            case is_ignore(Comment, RegEx) of
+                                true ->
+                                    Acc;
+                                false ->
+                                    [{Line, comment, re_replace(Comment)} | Acc]
+                            end
+                    end,
+                    [],
+                    Comments)
+        ++ AccC,
     collect_comments(T, NewAccC, RegEx).
 
 -spec re_replace(string() | binary()) -> string().

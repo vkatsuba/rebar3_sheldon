@@ -134,7 +134,7 @@ get_ignore_regex(SpellcheckConfig) ->
 -spec format_results({string(), [maps:map()]}) -> string().
 format_results({SheldonMsg, Results}) ->
     lists:foldr(fun(Result, Acc) -> [Acc, format_result(Result)] end,
-                SheldonMsg ++ ":\n",
+                SheldonMsg ++ "\n",
                 Results).
 
 -spec format_result(maps:map()) -> io:data().

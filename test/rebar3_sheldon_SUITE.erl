@@ -72,7 +72,7 @@ ignore_regex(_Config) ->
     ok = file:set_cwd("../../../../test/test_app"),
     {ok, State1} = init(),
     Files = {files, ["src/test_ignore_regex.erl"]},
-    IgnoreRegEx = {ignore_regex, "[_@./#&+-=*]"},
+    IgnoreRegEx = {ignore_regex, "[_@./#&+-=%*]"},
     State2 = rebar_state:set(State1, spellcheck, [Files, IgnoreRegEx]),
     {Res, _} = spellcheck(State2),
     ?assertEqual(ok, Res).
