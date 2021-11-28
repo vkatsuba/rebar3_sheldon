@@ -94,6 +94,10 @@ Currently supported options for `spellcheck` configuration through `rebar.config
 ]}.
 ```
 
+## Dependencies
+
+**Required OTP version 23** or or higher. We only provide guarantees that the system runs on `OTP23+` since that's what we're testing it in, but the `minimum_otp_vsn` is `"21"` because some systems where **rebar3_sheldon** is integrated do require it.
+
 <!-- Badges -->
 [hexpm]: https://hex.pm/packages/rebar3_sheldon
 [hexpm version]: https://img.shields.io/hexpm/v/rebar3_sheldon.svg?style=flat-square
