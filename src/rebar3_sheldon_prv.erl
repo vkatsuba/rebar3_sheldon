@@ -73,7 +73,7 @@ do(State) ->
             {ok, State};
         Warnings -> %% @TODO: sheldon will return warning for TODO word
             [#{reason := #{bazinga := SheldonMsg}} | _] = Warnings,
-            {error, format_results({unicode:characters_to_list(SheldonMsg), Warnings})}
+            {error, format_results({SheldonMsg, Warnings})}
     end.
 
 -spec format_error(any()) -> iolist().
@@ -144,7 +144,7 @@ format_result(#{reason := #{misspelled_words := Misspelled}} = Data) ->
 -spec format_text(string(), list()) -> string().
 format_text(Text, Args) ->
     Formatted = io_lib:format(Text, Args),
-    unicode:characters_to_list(Formatted).
+    Formatted.
 
 -spec format_sheldon(list(), maps:map(), list()) -> string().
 format_sheldon([], _, Acc) ->
