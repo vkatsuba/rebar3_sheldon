@@ -78,7 +78,7 @@ do(State) ->
 
 -spec format_error(any()) -> iolist().
 format_error(Reason) ->
-    io_lib:format("~p", [Reason]).
+    io_lib:format("~ts", [Reason]).
 
 %% =============================================================================
 %% Internal functions
