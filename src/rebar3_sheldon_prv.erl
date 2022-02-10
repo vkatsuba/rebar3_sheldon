@@ -184,7 +184,7 @@ format_sheldon_candidates([Candidate | T], Acc) ->
 
 -spec to_bin(binary() | list()) -> binary().
 to_bin([_|_] = X) ->
-    list_to_binary();
+    list_to_binary(X);
 to_bin(X) ->
     X.
 
