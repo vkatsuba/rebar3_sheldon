@@ -131,10 +131,10 @@ get_ignore_regex(SpellcheckConfig) ->
 %% Error formatter
 %% =============================================================================
 
--spec format_results({string(), [maps:map()]}) -> string().
+-spec format_results({binary(), [maps:map()]}) -> string().
 format_results({SheldonMsg, Results}) ->
     lists:foldr(fun(Result, Acc) -> [Acc, format_result(Result)] end,
-                SheldonMsg ++ "\n",
+                binary_to_list(SheldonMsg) ++ "\n",
                 Results).
 
 -spec format_result(maps:map()) -> io:data().
