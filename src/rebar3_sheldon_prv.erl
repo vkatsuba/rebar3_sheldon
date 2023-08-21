@@ -41,6 +41,7 @@ init(State) ->
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
+    _ = rebar_log:log(info, "sheldon analysis starting, this may take a while...", []),
     Args = parse_opts(State),
     Config = rebar_state:get(State, spellcheck, []),
     SpellcheckConfig = prepare_config(Args, Config),
