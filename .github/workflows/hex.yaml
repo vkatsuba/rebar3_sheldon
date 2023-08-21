@@ -11,14 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        otp: [24.1]
-        rebar: [3.17.0]
+        otp: [25]
+    container:
+      image: erlang:${{ matrix.otp }}
     steps:
-    - uses: actions/checkout@v2
-    - uses: erlef/setup-beam@v1
-      with:
-        otp-version: ${{matrix.otp}}
-        rebar3-version: ${{matrix.rebar}}
+    - uses: actions/checkout@v3
     - name: Publish to Hex.pm
       env:
         HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
